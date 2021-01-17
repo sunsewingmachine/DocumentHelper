@@ -34,15 +34,15 @@ namespace DocumentHelper
             this.Rt = new System.Windows.Forms.RichTextBox();
             this.Lv = new System.Windows.Forms.ListView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
+            this.TbAddToDB = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.BtnAdd = new System.Windows.Forms.Button();
             this.TbWeb = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -67,10 +67,10 @@ namespace DocumentHelper
             this.tabPage1.BackColor = System.Drawing.Color.Silver;
             this.tabPage1.Controls.Add(this.Rt);
             this.tabPage1.Controls.Add(this.Lv);
-            this.tabPage1.Location = new System.Drawing.Point(4, 32);
+            this.tabPage1.Location = new System.Drawing.Point(4, 37);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabPage1.Size = new System.Drawing.Size(1162, 618);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(1162, 613);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Typing   ";
             // 
@@ -96,16 +96,44 @@ namespace DocumentHelper
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.ActiveBorder;
             this.tabPage2.Controls.Add(this.label2);
-            this.tabPage2.Controls.Add(this.textBox1);
+            this.tabPage2.Controls.Add(this.TbAddToDB);
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.BtnAdd);
             this.tabPage2.Controls.Add(this.TbWeb);
-            this.tabPage2.Location = new System.Drawing.Point(4, 32);
+            this.tabPage2.Location = new System.Drawing.Point(4, 37);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabPage2.Size = new System.Drawing.Size(1162, 618);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(1162, 613);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Database   ";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(26, 147);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(199, 29);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Text to add to db";
+            // 
+            // TbAddToDB
+            // 
+            this.TbAddToDB.AcceptsReturn = true;
+            this.TbAddToDB.AcceptsTab = true;
+            this.TbAddToDB.Location = new System.Drawing.Point(280, 144);
+            this.TbAddToDB.Multiline = true;
+            this.TbAddToDB.Name = "TbAddToDB";
+            this.TbAddToDB.Size = new System.Drawing.Size(394, 370);
+            this.TbAddToDB.TabIndex = 7;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(26, 83);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(250, 29);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Website/Webpage link";
             // 
             // BtnAdd
             // 
@@ -121,8 +149,9 @@ namespace DocumentHelper
             // 
             this.TbWeb.Location = new System.Drawing.Point(280, 83);
             this.TbWeb.Name = "TbWeb";
-            this.TbWeb.Size = new System.Drawing.Size(394, 30);
+            this.TbWeb.Size = new System.Drawing.Size(394, 36);
             this.TbWeb.TabIndex = 4;
+            this.TbWeb.TextChanged += new System.EventHandler(this.TbWeb_TextChanged);
             // 
             // tabPage3
             // 
@@ -130,47 +159,29 @@ namespace DocumentHelper
             this.tabPage3.Controls.Add(this.label4);
             this.tabPage3.Controls.Add(this.label3);
             this.tabPage3.Controls.Add(this.textBox2);
-            this.tabPage3.Location = new System.Drawing.Point(4, 32);
+            this.tabPage3.Location = new System.Drawing.Point(4, 37);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabPage3.Size = new System.Drawing.Size(1162, 618);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(1162, 613);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "HotStrings   ";
             // 
-            // label1
+            // label4
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(26, 83);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(197, 23);
-            this.label1.TabIndex = 6;
-            this.label1.Text = "Website/Webpage link";
-            // 
-            // textBox1
-            // 
-            this.textBox1.AcceptsReturn = true;
-            this.textBox1.AcceptsTab = true;
-            this.textBox1.Location = new System.Drawing.Point(280, 144);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(394, 370);
-            this.textBox1.TabIndex = 7;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(26, 147);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(156, 23);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Text to add to db";
+            this.label4.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.label4.Location = new System.Drawing.Point(602, 37);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(220, 189);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "Examples:\r\n\r\nggc - google cloud\r\nprt   - please read this\r\nhau   - how are you?\r\n" +
+    "\r\n\r\n(put each in a new line, \r\nwith hypen - as delimiter)";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(32, 34);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(134, 23);
+            this.label3.Size = new System.Drawing.Size(167, 29);
             this.label3.TabIndex = 10;
             this.label3.Text = "Add hotStrings";
             // 
@@ -185,19 +196,9 @@ namespace DocumentHelper
             this.textBox2.Size = new System.Drawing.Size(391, 515);
             this.textBox2.TabIndex = 9;
             // 
-            // label4
-            // 
-            this.label4.Font = new System.Drawing.Font("Tahoma", 12F);
-            this.label4.Location = new System.Drawing.Point(602, 37);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(220, 189);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "Examples:\r\n\r\nggc - google cloud\r\nprt   - please read this\r\nhau   - how are you?\r\n" +
-    "\r\n\r\n(put each in a new line, \r\nwith hypen - as delimiter)";
-            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1174, 660);
@@ -205,6 +206,7 @@ namespace DocumentHelper
             this.Font = new System.Drawing.Font("Tahoma", 10F);
             this.Name = "Form1";
             this.Text = "Document Typing Helper";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
@@ -227,7 +229,7 @@ namespace DocumentHelper
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox TbAddToDB;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox2;
