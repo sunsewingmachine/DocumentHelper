@@ -23,8 +23,8 @@ namespace DocumentHelper
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            DocumentEntity documentEntity = new DocumentEntity();
-            var table = documentEntity.SelectQuery("select * from Document;");
+            Connection connection = new Connection();
+            var table = connection.SelectQuery("select * from Document;");
             foreach (DataRow item in table.Rows)
             {
                 Lv.Items.Add(new ListViewItem() { Text = item["Text"].ToString() });
@@ -33,15 +33,7 @@ namespace DocumentHelper
 
         private void TbWeb_TextChanged(object sender, EventArgs e)
         {
-            //var webRequest = WebRequest.Create(TbWeb.Text);
-
-            //using (var response = webRequest.GetResponse())
-            //using (var content = response.GetResponseStream())
-            //using (var reader = new StreamReader(content))
-            //{
-            //    var strContent = reader.ReadToEnd();
-            //}
-
+            Connection connection = new Connection();
             using (WebClient client = new WebClient())
             {
                 string htmlCode = client.DownloadString(TbWeb.Text);
@@ -49,8 +41,15 @@ namespace DocumentHelper
                 var doc = new HtmlAgilityPack.HtmlDocument();
                 doc.LoadHtml(htmlCode);
 
-                // InnerText 
-                TbAddToDB.Text = doc.DocumentNode.InnerText;
+                var text = "";
+                var list = doc.DocumentNode.InnerText.Replace("\n", "").Split(' ').Where(o => o.Length > 1);
+                foreach (var item in list)
+                {
+                    // InnerText 
+                    text += Environment.NewLine + item;
+                    connection.CreateDocumnet(item);
+                }
+                TbAddToDB.Text = text;
             }
 
         }

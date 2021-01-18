@@ -1,13 +1,14 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Data.SQLite;
 
 namespace Shared
 {
-    public class DocumentEntity
+    public class Connection
     {
         private SQLiteConnection sqlite;
 
-        public DocumentEntity()
+        public Connection()
         {
             //This part killed me in the beginning.  I was specifying "DataSource"
             //instead of "Data Source"
@@ -35,6 +36,25 @@ namespace Shared
             }
             sqlite.Close();
             return dt;
+        }
+
+        public void CreateDocumnet(string text)
+        {
+            sqlite.Open();
+            SQLiteCommand insertSQL = new SQLiteCommand(string.Format("INSERT INTO Document (Text) VALUES ({0})",text), sqlite);
+            //insertSQL.Parameters.Add("Text",);
+            try
+            {
+                insertSQL.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                sqlite.Close();
+            }
         }
     }
 }
