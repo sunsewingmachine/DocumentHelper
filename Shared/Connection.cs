@@ -12,7 +12,7 @@ namespace Shared
         {
             //This part killed me in the beginning.  I was specifying "DataSource"
             //instead of "Data Source"
-            sqlite = new SQLiteConnection(@"Data Source=D:\_sqlite.db");
+            sqlite = new SQLiteConnection(@"Data Source=_sqlite.db");
 
         }
 
