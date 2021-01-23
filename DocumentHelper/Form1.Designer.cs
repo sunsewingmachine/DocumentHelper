@@ -31,11 +31,11 @@ namespace DocumentHelper
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lstDBItems = new System.Windows.Forms.ListBox();
             this.Rt = new System.Windows.Forms.RichTextBox();
-            this.Lv = new System.Windows.Forms.ListView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.lstItems = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.TbAddToDB = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.BtnAdd = new System.Windows.Forms.Button();
             this.TbWeb = new System.Windows.Forms.TextBox();
@@ -65,8 +65,8 @@ namespace DocumentHelper
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.Color.Silver;
+            this.tabPage1.Controls.Add(this.lstDBItems);
             this.tabPage1.Controls.Add(this.Rt);
-            this.tabPage1.Controls.Add(this.Lv);
             this.tabPage1.Location = new System.Drawing.Point(4, 37);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -74,29 +74,31 @@ namespace DocumentHelper
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Typing   ";
             // 
+            // lstDBItems
+            // 
+            this.lstDBItems.FormattingEnabled = true;
+            this.lstDBItems.ItemHeight = 28;
+            this.lstDBItems.Location = new System.Drawing.Point(808, 11);
+            this.lstDBItems.Name = "lstDBItems";
+            this.lstDBItems.Size = new System.Drawing.Size(348, 592);
+            this.lstDBItems.TabIndex = 9;
+            // 
             // Rt
             // 
             this.Rt.Location = new System.Drawing.Point(8, 8);
             this.Rt.Name = "Rt";
             this.Rt.Size = new System.Drawing.Size(793, 603);
             this.Rt.TabIndex = 8;
+            this.Rt.TabStop = false;
             this.Rt.Text = "";
-            // 
-            // Lv
-            // 
-            this.Lv.Font = new System.Drawing.Font("Tahoma", 10F);
-            this.Lv.HideSelection = false;
-            this.Lv.Location = new System.Drawing.Point(807, 7);
-            this.Lv.Name = "Lv";
-            this.Lv.Size = new System.Drawing.Size(349, 605);
-            this.Lv.TabIndex = 7;
-            this.Lv.UseCompatibleStateImageBehavior = false;
+            this.Rt.TextChanged += new System.EventHandler(this.Rt_TextChanged);
+            this.Rt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Rt_KeyDown);
             // 
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.tabPage2.Controls.Add(this.lstItems);
             this.tabPage2.Controls.Add(this.label2);
-            this.tabPage2.Controls.Add(this.TbAddToDB);
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.BtnAdd);
             this.tabPage2.Controls.Add(this.TbWeb);
@@ -107,6 +109,15 @@ namespace DocumentHelper
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Database   ";
             // 
+            // lstItems
+            // 
+            this.lstItems.FormattingEnabled = true;
+            this.lstItems.ItemHeight = 28;
+            this.lstItems.Location = new System.Drawing.Point(280, 147);
+            this.lstItems.Name = "lstItems";
+            this.lstItems.Size = new System.Drawing.Size(394, 396);
+            this.lstItems.TabIndex = 9;
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -115,16 +126,6 @@ namespace DocumentHelper
             this.label2.Size = new System.Drawing.Size(199, 29);
             this.label2.TabIndex = 8;
             this.label2.Text = "Text to add to db";
-            // 
-            // TbAddToDB
-            // 
-            this.TbAddToDB.AcceptsReturn = true;
-            this.TbAddToDB.AcceptsTab = true;
-            this.TbAddToDB.Location = new System.Drawing.Point(280, 144);
-            this.TbAddToDB.Multiline = true;
-            this.TbAddToDB.Name = "TbAddToDB";
-            this.TbAddToDB.Size = new System.Drawing.Size(394, 370);
-            this.TbAddToDB.TabIndex = 7;
             // 
             // label1
             // 
@@ -144,6 +145,7 @@ namespace DocumentHelper
             this.BtnAdd.TabIndex = 5;
             this.BtnAdd.Text = "Add To Db";
             this.BtnAdd.UseVisualStyleBackColor = true;
+            this.BtnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
             // 
             // TbWeb
             // 
@@ -222,17 +224,17 @@ namespace DocumentHelper
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.RichTextBox Rt;
-        private System.Windows.Forms.ListView Lv;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button BtnAdd;
         private System.Windows.Forms.TextBox TbWeb;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox TbAddToDB;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.ListBox lstItems;
+        private System.Windows.Forms.ListBox lstDBItems;
     }
 }
 

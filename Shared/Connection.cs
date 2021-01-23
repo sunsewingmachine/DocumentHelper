@@ -12,7 +12,7 @@ namespace Shared
         {
             //This part killed me in the beginning.  I was specifying "DataSource"
             //instead of "Data Source"
-            sqlite = new SQLiteConnection(@"Data Source=C:\_sqlite.db");
+            sqlite = new SQLiteConnection(@"Data Source=D:\_sqlite.db");
 
         }
 
@@ -41,7 +41,7 @@ namespace Shared
         public void CreateDocumnet(string text)
         {
             sqlite.Open();
-            SQLiteCommand insertSQL = new SQLiteCommand(string.Format("INSERT INTO Document (Text) VALUES ({0})",text), sqlite);
+            SQLiteCommand insertSQL = new SQLiteCommand(string.Format("INSERT INTO Document (Text) VALUES ('{0}');",text), sqlite);
             //insertSQL.Parameters.Add("Text",);
             try
             {
