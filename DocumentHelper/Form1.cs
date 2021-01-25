@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Shared.Tools;
 
 namespace DocumentHelper
 {
@@ -37,10 +39,13 @@ namespace DocumentHelper
                 Lvdb.View = View.Details;
             }
 
-            LoadData(string.Empty);
+            // LoadData(string.Empty);
         }
+
         private void LoadData(string text)
         {
+            if (string.IsNullOrWhiteSpace(text)) return;
+
             var connection = new Connection();
             var table = connection.SelectQuery($"select * from Document where Text like '{text}%';");
 
@@ -69,12 +74,14 @@ namespace DocumentHelper
                     Lvdb.Items.Add(item2);
                 }
             }
-
-
         }
 
-        private void TbWeb_TextChanged(object sender, EventArgs e)
+
+        private void BtnDownload_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace( TbWeb.Text)) return;
+            BtnDownload.Enabled = false;
+
             Connection connection = new Connection();
             using (WebClient client = new WebClient())
             {
@@ -84,33 +91,62 @@ namespace DocumentHelper
                 var doc = new HtmlAgilityPack.HtmlDocument();
                 doc.LoadHtml(htmlCode);
 
-                var list = doc.DocumentNode.InnerText.Replace("\n", "").Split(' ').Where(o => o.Length > 1);
+                var innerText = doc.DocumentNode.InnerText.Trim();
+                innerText = innerText.Replace("\n", ".");
+                innerText = innerText.Replace("..", ".");
+
+                var reg = new Regex(@"[\|!#$%&/()=?»«@£§€{}\-'‘’“”<>_,]");   // . ;
+                innerText = reg.Replace(innerText, string.Empty);
+                var cleanedText = Regex.Replace(innerText, @"\s+", " ");
+
+                // var list = cleanedText.Split(' ').Where(o => o.Length > 1);
+
+                var list = cleanedText.Split('.').Where(o => o.Length > 1);
+
                 foreach (var item in list)
                 {
-                    if (!HasSpecialChar(item))
-                    {
-                        lstItems.Items.Add(item);
-                    }
+                    // if (!HasSpecialChar(item)) lstItems.Items.Add(item);
+                    var line = item.Trim().Replace("..", string.Empty);
+                    lstItems.Items.Add(line);
                 }
             }
+
+            BtnDownload.Enabled = true;
+        }
+
+
+        private void TbWeb_TextChanged(object sender, EventArgs e)
+        {
 
         }
 
         private void BtnAdd_Click(object sender, EventArgs e)
         {
             Connection connection = new Connection();
+
             foreach (var item in lstItems.Items)
             {
-                if (!HasSpecialChar(item.ToString()) && !HasTextBefore(item.ToString()))
-                {
-                    connection.CreateDocumnet(item.ToString());
-                }
+                // Send each line, it will be split there
+                connection.AddAllWordsToDb(item.ToString());
             }
-
-
-
-            LoadData(string.Empty);
         }
+
+
+        // Previous code dropped
+        //private void BtnAdd_Click(object sender, EventArgs e)
+        //{
+        //    Connection connection = new Connection();
+
+        //    foreach (var item in lstItems.Items)
+        //    {
+        //        if (HasTextBefore(item.ToString())) continue;
+                
+        //        connection.CreateDocument(item.ToString());
+        //    }
+            
+        //    LoadData(string.Empty);
+        //}
+
 
         public bool HasTextBefore(string text)
         {
@@ -121,6 +157,8 @@ namespace DocumentHelper
 
         public bool HasSpecialChar(string input)
         {
+            // if (!HasSpecialChar(item.ToString()) && !HasTextBefore(item.ToString()))
+
             string specialChar = @"\|!#$%&/()=?»«@£§€{}.-;'<>_,";
             foreach (var item in specialChar)
             {
@@ -178,5 +216,6 @@ namespace DocumentHelper
 
 
         }
+
     }
 }

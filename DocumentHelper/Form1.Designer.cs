@@ -35,6 +35,7 @@ namespace DocumentHelper
             this.lstDBItems = new System.Windows.Forms.ListBox();
             this.Rt = new System.Windows.Forms.RichTextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.BtnDownload = new System.Windows.Forms.Button();
             this.lstItems = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -108,6 +109,7 @@ namespace DocumentHelper
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.tabPage2.Controls.Add(this.BtnDownload);
             this.tabPage2.Controls.Add(this.lstItems);
             this.tabPage2.Controls.Add(this.label2);
             this.tabPage2.Controls.Add(this.label1);
@@ -116,17 +118,29 @@ namespace DocumentHelper
             this.tabPage2.Location = new System.Drawing.Point(4, 32);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1162, 618);
+            this.tabPage2.Size = new System.Drawing.Size(1200, 618);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Database   ";
             // 
+            // BtnDownload
+            // 
+            this.BtnDownload.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.BtnDownload.Location = new System.Drawing.Point(449, 119);
+            this.BtnDownload.Name = "BtnDownload";
+            this.BtnDownload.Size = new System.Drawing.Size(225, 40);
+            this.BtnDownload.TabIndex = 10;
+            this.BtnDownload.Text = "Download to Listbox";
+            this.BtnDownload.UseVisualStyleBackColor = true;
+            this.BtnDownload.Click += new System.EventHandler(this.BtnDownload_Click);
+            // 
             // lstItems
             // 
+            this.lstItems.Font = new System.Drawing.Font("Tahoma", 10F);
             this.lstItems.FormattingEnabled = true;
-            this.lstItems.ItemHeight = 23;
-            this.lstItems.Location = new System.Drawing.Point(280, 147);
+            this.lstItems.ItemHeight = 16;
+            this.lstItems.Location = new System.Drawing.Point(30, 193);
             this.lstItems.Name = "lstItems";
-            this.lstItems.Size = new System.Drawing.Size(394, 395);
+            this.lstItems.Size = new System.Drawing.Size(1164, 340);
             this.lstItems.TabIndex = 9;
             // 
             // label2
@@ -164,6 +178,7 @@ namespace DocumentHelper
             this.TbWeb.Name = "TbWeb";
             this.TbWeb.Size = new System.Drawing.Size(394, 30);
             this.TbWeb.TabIndex = 4;
+            this.TbWeb.Text = "https://indiabeeps.com/allprojects/del/addtexttodb/test4.html";
             this.TbWeb.TextChanged += new System.EventHandler(this.TbWeb_TextChanged);
             // 
             // tabPage3
@@ -175,7 +190,7 @@ namespace DocumentHelper
             this.tabPage3.Location = new System.Drawing.Point(4, 32);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1162, 618);
+            this.tabPage3.Size = new System.Drawing.Size(1200, 618);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "HotStrings   ";
             // 
@@ -247,6 +262,7 @@ namespace DocumentHelper
         private System.Windows.Forms.ListBox lstItems;
         private System.Windows.Forms.ListBox lstDBItems;
         private System.Windows.Forms.ListView Lvdb;
+        private System.Windows.Forms.Button BtnDownload;
     }
 }
 
