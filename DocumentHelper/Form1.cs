@@ -129,6 +129,8 @@ namespace DocumentHelper
                 // Send each line, it will be split there
                 connection.AddAllWordsToDb(item.ToString());
             }
+
+            lstItems.Items.Clear();
         }
 
 
