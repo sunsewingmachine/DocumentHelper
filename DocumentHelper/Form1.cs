@@ -47,6 +47,7 @@ namespace DocumentHelper
             if (string.IsNullOrWhiteSpace(text)) return;
 
             var connection = new Connection();
+            connection.OpenConnection();
             var table = connection.SelectQuery($"select * from Document where Text like '{text}%';");
 
             if (UseListBox)
@@ -74,15 +75,15 @@ namespace DocumentHelper
                     Lvdb.Items.Add(item2);
                 }
             }
+            connection.CloseConnection();
         }
 
 
         private void BtnDownload_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace( TbWeb.Text)) return;
+            if (string.IsNullOrWhiteSpace(TbWeb.Text)) return;
             BtnDownload.Enabled = false;
 
-            Connection connection = new Connection();
             using (WebClient client = new WebClient())
             {
                 var htmlData = client.DownloadData(TbWeb.Text);
@@ -123,13 +124,13 @@ namespace DocumentHelper
         private void BtnAdd_Click(object sender, EventArgs e)
         {
             Connection connection = new Connection();
-
+            connection.OpenConnection();
             foreach (var item in lstItems.Items)
             {
                 // Send each line, it will be split there
                 connection.AddAllWordsToDb(item.ToString());
             }
-
+            connection.CloseConnection();
             lstItems.Items.Clear();
         }
 
@@ -142,20 +143,20 @@ namespace DocumentHelper
         //    foreach (var item in lstItems.Items)
         //    {
         //        if (HasTextBefore(item.ToString())) continue;
-                
+
         //        connection.CreateDocument(item.ToString());
         //    }
-            
+
         //    LoadData(string.Empty);
         //}
 
 
-        public bool HasTextBefore(string text)
-        {
-            Connection connection = new Connection();
-            var table = connection.SelectQuery(string.Format("select * from Document where Text = '{0}';", text));
-            return table.Rows.Count > 0;
-        }
+        //public bool HasTextBefore(string text)
+        //{
+        //    Connection connection = new Connection();
+        //    var table = connection.SelectQuery(string.Format("select * from Document where Text = '{0}';", text));
+        //    return table.Rows.Count > 0;
+        //}
 
         public bool HasSpecialChar(string input)
         {
@@ -169,12 +170,50 @@ namespace DocumentHelper
 
             return false;
         }
+        private void GetNearWord(string beforeLastItem)
+        {
+            if (string.IsNullOrWhiteSpace(beforeLastItem)) return;
 
+            var connection = new Connection();
+            connection.OpenConnection();
+            var table = connection.SelectQuery($"select * from Document where Text = '{beforeLastItem}';");
+
+            Lvdb.Items.Clear();
+            string nearWordIds = table.Rows[0]?.ItemArray[3]?.ToString();//near word ids
+            if (!string.IsNullOrWhiteSpace(nearWordIds))
+            {
+                var arr = nearWordIds.Split(' ');
+                string suggestedStr = string.Empty;
+                foreach (var each in arr)
+                {
+                    if (!string.IsNullOrWhiteSpace(each))
+                    {
+                        var item = connection.SelectQuery($"select * from Document where ID = '{each}';");
+
+                        suggestedStr += item?.Rows[0]?.ItemArray[1].ToString() + " ";
+                    }
+                }
+                var item2 = new ListViewItem(new[] { suggestedStr, string.Empty, string.Empty });
+                Lvdb.Items.Add(item2);
+            }
+            connection.CloseConnection();
+        }
         private void Rt_TextChanged(object sender, EventArgs e)
         {
             string text = ((RichTextBox)sender).Text;
-            var lastItem = text.Split(' ').Last();
-            LoadData(lastItem);
+            var items = text.Split(' ');
+            var lastItem = items.Last();
+            if (text.Length > 0 && lastItem == "")
+            {
+                //near word mode
+                var beforeLastItem = items.ElementAt(items.Length - 2);
+                GetNearWord(beforeLastItem);
+            }
+            else
+            {
+                //auto complete for current word
+                LoadData(lastItem);
+            }
         }
 
         private void Rt_KeyDown(object sender, KeyEventArgs e)
@@ -207,7 +246,7 @@ namespace DocumentHelper
                 }
                 else
                 {
-                    Rt.Text = Lvdb.Items[0].SubItems[0].ToString();
+                    Rt.Text = Lvdb.Items[0].SubItems[0].Text.ToString();
                 }
 
                 Rt.SelectionStart = Rt.Text.Length;

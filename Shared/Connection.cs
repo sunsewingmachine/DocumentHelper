@@ -16,9 +16,15 @@ namespace Shared
             //This part killed me in the beginning.  I was specifying "DataSource"
             //instead of "Data Source"
             sqlite = new SQLiteConnection(@"Data Source=_sqlite.db");
-
         }
-
+        public void OpenConnection()
+        {
+            sqlite.Open();
+        }
+        public void CloseConnection()
+        {
+            sqlite.Close();
+        }
         public DataTable SelectQuery(string query)
         {
             SQLiteDataAdapter ad;
@@ -27,7 +33,7 @@ namespace Shared
             try
             {
                 SQLiteCommand cmd;
-                sqlite.Open();  //Initiate connection to the db
+                //sqlite.Open();  //Initiate connection to the db
                 cmd = sqlite.CreateCommand();
                 cmd.CommandText = query;  //set the passed query
                 ad = new SQLiteDataAdapter(cmd);
@@ -38,19 +44,28 @@ namespace Shared
                 //Add your exception code here.
             }
 
-            sqlite.Close();
+            //sqlite.Close();
             return dt;
         }
-
-        public void CreateDocument(string text)
+        public int UpdateDocumentFrequency(string id)
         {
-            sqlite.Open();
-            SQLiteCommand insertSQL = new SQLiteCommand(string.Format("INSERT INTO Document (Text) VALUES ('{0}');",text), sqlite);
+            using (SQLiteCommand command = new SQLiteCommand(sqlite))
+            {
+                command.CommandText = "update Document set Frequency = Frequency + 1 where ID=:id";
+                command.Parameters.Add("id", DbType.String).Value = id;
+                return command.ExecuteNonQuery();
+            }
+        }
+
+        public void CreateDocument(string text, string nextWordId)
+        {
+            //sqlite.Open();
+            SQLiteCommand insertSQL = new SQLiteCommand(string.Format("INSERT INTO Document (ID,Text,Frequency,NearWords) VALUES ((last_insert_rowid()+1),'{0}',1,'{1}');", text, nextWordId), sqlite);
             //insertSQL.Parameters.Add("Text",);
 
             try
             {
-                insertSQL.ExecuteNonQuery();
+                int result = insertSQL.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
@@ -58,10 +73,10 @@ namespace Shared
             }
             finally
             {
-                sqlite.Close();
+                //sqlite.Close();
             }
         }
-        
+
         public void AddAllWordsToDb(string currentLine)
         {
             if (string.IsNullOrWhiteSpace(currentLine)) return;
@@ -69,7 +84,7 @@ namespace Shared
             var words = currentLine.Split(' ').Reverse(); // Reverse is must
             var enumerable = words as string[] ?? words.ToArray();
             if (enumerable.Length == 0) return;
-            
+
             var total = enumerable.Count();
 
             for (int i = 0; i < total; i++)
@@ -86,21 +101,28 @@ namespace Shared
         private void AddWordToDbWithNearWordsIds(string currentWord, string nextWord)
         {
             Debug.WriteLine("currentWord: " + currentWord + ",    nextWord:" + nextWord);
-            return;
-
-
             var table = SelectQuery(string.Format("select * from Document where Text = '{0}';", currentWord));
 
             if (table.Rows.Count > 0)
             {
-                // Work-1) Increment it's_frequency field
-                // Work-2) Add nextWord's id to NearWords field of currentWord		
+                UpdateDocumentFrequency(table.Rows[0].ItemArray[0].ToString());	
             }
             else
             {
-                CreateDocument(currentWord); // Work-1) add currentWord to db
-                // Work-2) Add nextWord's id to NearWords field of currentWord
+                CreateDocument(currentWord, GetNextWordId(nextWord));
             }
+        }
+
+        private string GetNextWordId(string nextWord)
+        {
+            var result = string.Empty;
+            var table = SelectQuery(string.Format("select * from Document where Text = '{0}';", nextWord));
+
+            if (table.Rows.Count > 0)
+            {
+                result = $"{table.Rows[0].ItemArray[0]?.ToString()} {table.Rows[0].ItemArray[3]?.ToString()}";
+            }
+            return result;
         }
 
     }
