@@ -47,15 +47,41 @@ namespace Shared
             //sqlite.Close();
             return dt;
         }
-        public int UpdateDocumentFrequency(string id)
+
+        public int UpdateDocumentFrequency(string id, string nextWordId)
         {
+            string space = " ";
+            var oldNearWordIDs = GetOldNearWordIds(id);
+            var kk = space + oldNearWordIDs + space;
+
+            string nearWordIds;
+            if (kk.Contains(space + nextWordId + space)) // since ('3 863 52').contains(6) would return true!
+            {
+                nearWordIds = oldNearWordIDs;
+            }
+            else
+            {
+                nearWordIds = oldNearWordIDs + space + nextWordId;
+            }
+
             using (SQLiteCommand command = new SQLiteCommand(sqlite))
             {
-                command.CommandText = "update Document set Frequency = Frequency + 1 where ID=:id";
+                // command.CommandText = "update Document set Frequency = Frequency + 1 where ID=:id";
+                command.CommandText = string.Format("update Document set Frequency = Frequency + 1, NearWords = '{0}' where ID=:id", nearWordIds);
                 command.Parameters.Add("id", DbType.String).Value = id;
                 return command.ExecuteNonQuery();
             }
         }
+
+        public string GetOldNearWordIds(string id)
+        {
+            var table = SelectQuery(string.Format("select * from Document where ID = '{0}';", id));
+            if (table.Rows.Count == 0) return "";
+
+            // result = $"{table.Rows[0].ItemArray[0]?.ToString()} {table.Rows[0].ItemArray[3]?.ToString()}";
+            return table.Rows[0].ItemArray[3]?.ToString();
+        }
+
 
         public void CreateDocument(string text, string nextWordId)
         {
@@ -105,7 +131,7 @@ namespace Shared
 
             if (table.Rows.Count > 0)
             {
-                UpdateDocumentFrequency(table.Rows[0].ItemArray[0].ToString());	
+                UpdateDocumentFrequency(table.Rows[0].ItemArray[0].ToString(), GetNextWordId(nextWord));	
             }
             else
             {
@@ -116,11 +142,14 @@ namespace Shared
         private string GetNextWordId(string nextWord)
         {
             var result = string.Empty;
+            if (string.IsNullOrWhiteSpace(nextWord)) return result;
+
             var table = SelectQuery(string.Format("select * from Document where Text = '{0}';", nextWord));
 
             if (table.Rows.Count > 0)
             {
-                result = $"{table.Rows[0].ItemArray[0]?.ToString()} {table.Rows[0].ItemArray[3]?.ToString()}";
+                // result = $"{table.Rows[0].ItemArray[0]?.ToString()} {table.Rows[0].ItemArray[3]?.ToString()}";
+                result = table.Rows[0].ItemArray[0]?.ToString();
             }
             return result;
         }

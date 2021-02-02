@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -68,14 +69,25 @@ namespace DocumentHelper
                 }
                 else
                 {
-                    var a = item.ItemArray[0].ToString();
                     var b = item.ItemArray[1].ToString();
+
+                    if (ContainsPr(b)) continue;
+
+                    var a = item.ItemArray[0].ToString();
                     var c = item.ItemArray[2].ToString();
                     var item2 = new ListViewItem(new[] { b, c, a });
                     Lvdb.Items.Add(item2);
                 }
             }
             connection.CloseConnection();
+        }
+
+        private bool ContainsPr(string str)
+        {
+            var query = Lvdb.Items
+                .Cast<ListViewItem>().Any(item => item.SubItems[0].Text == str);
+
+            return query;
         }
 
 
@@ -125,13 +137,18 @@ namespace DocumentHelper
         {
             Connection connection = new Connection();
             connection.OpenConnection();
-            foreach (var item in lstItems.Items)
-            {
+
+            do
+            { 
                 // Send each line, it will be split there
-                connection.AddAllWordsToDb(item.ToString());
+                connection.AddAllWordsToDb(lstItems.Items[0].ToString());
+                lstItems.Items.RemoveAt(0);
+                lstItems.Refresh();
             }
+            while (lstItems.Items.Count > 0);
+
             connection.CloseConnection();
-            lstItems.Items.Clear();
+            // lstItems.Items.Clear();
         }
 
 
@@ -170,6 +187,7 @@ namespace DocumentHelper
 
             return false;
         }
+
         private void GetNearWord(string beforeLastItem)
         {
             if (string.IsNullOrWhiteSpace(beforeLastItem)) return;
@@ -179,25 +197,42 @@ namespace DocumentHelper
             var table = connection.SelectQuery($"select * from Document where Text = '{beforeLastItem}';");
 
             Lvdb.Items.Clear();
+            if (table.Rows.Count < 1) goto CloseConnection;
+
             string nearWordIds = table.Rows[0]?.ItemArray[3]?.ToString();//near word ids
             if (!string.IsNullOrWhiteSpace(nearWordIds))
             {
+                NearWordsList.Clear();
                 var arr = nearWordIds.Split(' ');
-                string suggestedStr = string.Empty;
+
                 foreach (var each in arr)
                 {
                     if (!string.IsNullOrWhiteSpace(each))
                     {
                         var item = connection.SelectQuery($"select * from Document where ID = '{each}';");
 
-                        suggestedStr += item?.Rows[0]?.ItemArray[1].ToString() + " ";
+                        if (item == null) continue;
+                        if (item.Rows.Count == 0) continue;
+
+                        // suggestedStr += item?.Rows[0]?.ItemArray[1].ToString() + " ";
+                        var suggestedStr = item?.Rows[0]?.ItemArray[1] + " ";
+
+                        if (!string.IsNullOrWhiteSpace(suggestedStr))
+                        {
+                            var item2 = new ListViewItem(new[] {suggestedStr, string.Empty, string.Empty});
+                            Lvdb.Items.Add(item2);
+                            NearWordsList.Add(item2);
+                        }
                     }
                 }
-                var item2 = new ListViewItem(new[] { suggestedStr, string.Empty, string.Empty });
-                Lvdb.Items.Add(item2);
             }
+
+            CloseConnection:
             connection.CloseConnection();
         }
+
+        List<ListViewItem> NearWordsList = new List<ListViewItem>();
+
         private void Rt_TextChanged(object sender, EventArgs e)
         {
             string text = ((RichTextBox)sender).Text;
@@ -212,15 +247,34 @@ namespace DocumentHelper
             else
             {
                 //auto complete for current word
+                AddNearWords();
                 LoadData(lastItem);
             }
+        }
+
+        private void AddNearWords()
+        {
+            if (UseListBox)
+            {
+                lstDBItems.Items.Clear();
+            }
+            else
+            {
+                Lvdb.Items.Clear();
+            }
+
+            foreach (var item in NearWordsList)
+            {
+                Lvdb.Items.Add(item);
+            }
+
         }
 
         private void Rt_KeyDown(object sender, KeyEventArgs e)
         {
             if (!e.KeyCode.Equals(Keys.Enter)) return;
             e.SuppressKeyPress = true;
-
+            if (Lvdb.Items.Count == 0) return;
 
             if (UseListBox)
             {
@@ -242,20 +296,15 @@ namespace DocumentHelper
                 if (Rt.Text.LastIndexOf(' ') > 0)
                 {
                     Rt.Text = Rt.Text.Substring(0, Rt.Text.LastIndexOf(' ')) + " " +
-                              (Lvdb.Items[0].SubItems[0].Text);
+                              Lvdb.Items[0].SubItems[0].Text;
                 }
                 else
                 {
-                    Rt.Text = Lvdb.Items[0].SubItems[0].Text.ToString();
+                    Rt.Text = Lvdb.Items[0].SubItems[0].Text;
                 }
 
                 Rt.SelectionStart = Rt.Text.Length;
-
             }
-
-
-
-
         }
 
     }

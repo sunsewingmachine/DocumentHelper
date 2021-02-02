@@ -178,7 +178,7 @@ namespace DocumentHelper
             this.TbWeb.Name = "TbWeb";
             this.TbWeb.Size = new System.Drawing.Size(394, 30);
             this.TbWeb.TabIndex = 4;
-            this.TbWeb.Text = "https://indiabeeps.com/allprojects/del/addtexttodb/test4.html";
+            this.TbWeb.Text = "https://indiabeeps.com/allprojects/del/addtexttodb/test5.html";
             this.TbWeb.TextChanged += new System.EventHandler(this.TbWeb_TextChanged);
             // 
             // tabPage3
