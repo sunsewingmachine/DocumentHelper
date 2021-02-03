@@ -89,7 +89,7 @@ namespace Shared
         public void CreateDocument(string text, string nextWordId)
         {
             //sqlite.Open();
-            SQLiteCommand insertSQL = new SQLiteCommand(string.Format("INSERT INTO Document (ID,Text,Frequency,NearWords) VALUES ((last_insert_rowid()+1),'{0}',1,'{1}');", text, nextWordId), sqlite);
+            SQLiteCommand insertSQL = new SQLiteCommand(string.Format("INSERT INTO Document (Text,Frequency,NearWords) VALUES ('{0}',1,'{1}');", text, nextWordId), sqlite);
             //insertSQL.Parameters.Add("Text",);
 
             try
@@ -100,10 +100,6 @@ namespace Shared
             {
                 throw new Exception(ex.Message);
             }
-            finally
-            {
-                //sqlite.Close();
-            }
         }
 
         public void AddAllWordsToDb(string currentLine)
@@ -111,6 +107,8 @@ namespace Shared
             if (string.IsNullOrWhiteSpace(currentLine)) return;
 
             var words = currentLine.Split(' ').Reverse(); // Reverse is must
+            words = RemoveWordsHavingNumbers(words.ToList());
+
             var enumerable = words as string[] ?? words.ToArray();
             if (enumerable.Length == 0) return;
 
@@ -124,6 +122,13 @@ namespace Shared
             }
 
             Debug.WriteLine("");
+        }
+
+        public List<string> RemoveWordsHavingNumbers(List<string> list)
+        {
+            list.RemoveAll(x => x.Any(char.IsDigit));
+            list.RemoveAll(x => x.Length < 3);
+            return list;
         }
 
 
@@ -156,6 +161,34 @@ namespace Shared
             }
             return result;
         }
+
+
+        public bool CreateAlreadyAddedLink(string linkText)
+        {
+            //sqlite.Open();
+            SQLiteCommand insertSQL = new SQLiteCommand(string.Format("INSERT INTO Links (link) VALUES ('{0}');", linkText), sqlite);
+            //insertSQL.Parameters.Add("Text",);
+
+            try
+            {
+                int result = insertSQL.ExecuteNonQuery();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // throw new Exception(ex.Message);
+                Debug.WriteLine("Already contains this link: " + linkText);
+                return false;
+            }
+        }
+
+
+        private bool ContainsLink(string linkText)
+        {
+            var table = SelectQuery(string.Format("select * from Links where link = '{0}';", linkText));
+            return table.Rows.Count > 0;
+        }
+
 
     }
 }

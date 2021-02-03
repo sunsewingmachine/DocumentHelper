@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Microsoft.Win32;
@@ -24,7 +26,9 @@ namespace DocumentHelper
         private string RegValue_HotStringContent = @"HotStringContent";
         private string RegValue_Left = @"Left";
         private string RegValue_Top = @"Top";
+        private string RegValue_TbWebText = @"TbWebText";
         private List<string> UnAllowedWords = new List<string>();
+        private List<string> TerminationLines = new List<string>();
 
         public Form1()
         {
@@ -39,6 +43,7 @@ namespace DocumentHelper
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            lblStatus.Visible = false;
             GetSettings();
             PopulateUnAllowedWords();
 
@@ -52,14 +57,25 @@ namespace DocumentHelper
                 lstDBItems.Visible = false;
                 Lvdb.Visible = true;
 
-                Lvdb.Columns.Add("SC", 60, HorizontalAlignment.Left);
-                Lvdb.Columns.Add("Name", 240, HorizontalAlignment.Left);
-                Lvdb.Columns.Add("Freq", 60, HorizontalAlignment.Left);
-                Lvdb.Columns.Add("Id", 60, HorizontalAlignment.Left);
+                //Lvdb.Columns.Add("SC", 60, HorizontalAlignment.Left);
+                //Lvdb.Columns.Add("Name", 240, HorizontalAlignment.Left);
+                //Lvdb.Columns.Add("Freq", 60, HorizontalAlignment.Left);
+                //Lvdb.Columns.Add("Id", 60, HorizontalAlignment.Left);
+
+                Lvdb.Columns.Add("", 60, HorizontalAlignment.Left);
+                Lvdb.Columns.Add("", 240, HorizontalAlignment.Left);
+                //Lvdb.Columns.Add("", 60, HorizontalAlignment.Left);
+                //Lvdb.Columns.Add("", 60, HorizontalAlignment.Left);
+                Lvdb.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
                 Lvdb.View = View.Details;
             }
 
             LoadHotStrings();
+            
+            Rt.SelectionStart = Rt.TextLength;
+            Rt.Focus();
+            Rt.Focus();
+
             // LoadData(string.Empty);
         }
 
@@ -68,6 +84,7 @@ namespace DocumentHelper
             RegistryKey key2 = Registry.CurrentUser.CreateSubKey(RegSubKey);
             key2.SetValue(RegValue_RtContent, Rt.Text);
             key2.SetValue(RegValue_HotStringContent, TbHs.Text);
+            key2.SetValue(RegValue_TbWebText, TbWeb.Text);
 
             if (this.WindowState == FormWindowState.Minimized) return;
             if (this.WindowState == FormWindowState.Maximized) return;
@@ -77,7 +94,6 @@ namespace DocumentHelper
 
             key2.SetValue(RegValue_Left, Left);
             key2.SetValue(RegValue_Top, Top);
-
         }
 
         private void GetSettings()
@@ -88,9 +104,14 @@ namespace DocumentHelper
                 key2 = Registry.CurrentUser.CreateSubKey(RegSubKey);
                 key2.SetValue(RegValue_RtContent, "");
                 key2.SetValue(RegValue_HotStringContent, "");
+                key2.SetValue(RegValue_TbWebText, TbWeb.Text);
                 key2.SetValue(RegValue_Left, 500);
                 key2.SetValue(RegValue_Top, 500);
             }
+
+            var TbWebText = key2.GetValue(RegValue_TbWebText, "").ToString();
+            TbWeb.Text = TbWebText;
+            // TbWeb.Text = string.IsNullOrWhiteSpace(TbWebText) ? " " : @"https://indiabeeps.com/allprojects/del/addtexttodb/test5.html";
 
             var RtText = key2.GetValue(RegValue_RtContent, "").ToString();
             Rt.Text = string.IsNullOrWhiteSpace(RtText) ? " " : RtText;
@@ -145,9 +166,11 @@ namespace DocumentHelper
 
                     var item2 = new ListViewItem(new[] {id, b, c, a });
                     Lvdb.Items.Add(item2);
+                    if (Lvdb.Items.Count > 3) break;
                 }
             }
             connection.CloseConnection();
+            Lvdb.Visible = Lvdb.Items.Count > 0;
         }
 
         private bool ContainsPr(string str)
@@ -162,6 +185,16 @@ namespace DocumentHelper
         private void BtnDownload_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(TbWeb.Text)) return;
+            Connection con = new Connection();
+            con.OpenConnection();
+            var success = con.CreateAlreadyAddedLink(TbWeb.Text);
+            if (!success)
+            {
+                LblStatusDb.Text = "Already added!";
+                return;
+            }
+            LblStatusDb.Text = "";
+
             BtnDownload.Enabled = false;
 
             using (WebClient client = new WebClient())
@@ -181,40 +214,42 @@ namespace DocumentHelper
 
         private void AddTextToListBox(string innerText)
         {
-            innerText = innerText.Replace("\n", ".");
-            innerText = innerText.Replace("..", ".");
+            var cleanedText = CleanText(innerText);
+            var lines = GetLines(cleanedText);
 
-            var reg = new Regex(@"[\|!#$%&/()=?»«@£§€{}\-'‘’“”<>_,]");   // . ;
-            innerText = reg.Replace(innerText, string.Empty);
-            var cleanedText = Regex.Replace(innerText, @"\s+", " ");
-
-            // var list = cleanedText.Split(' ').Where(o => o.Length > 1);
-
-            var list = cleanedText.Split('.').Where(o => o.Length > 1);
-
-            foreach (var item in list)
+            foreach (var item in lines)
             {
-                // if (!HasSpecialChar(item)) lstItems.Items.Add(item);
                 var line = item.Trim().Replace("..", string.Empty);
+                if (ContainsTerminationSentence(line)) break;
                 if (ContainsWrongWords(line)) continue;
                 lstItems.Items.Add(line);
             }
         }
 
-        
-        private bool ContainsWrongWords(string line)
+        private bool ContainsTerminationSentence(string line)
         {
-            //CultureInfo culture = CultureInfo.CurrentCulture;
-            //bool b = UnAllowedWords.Any(s => culture.CompareInfo.IndexOf(s, line, CompareOptions.IgnoreCase)>0);
-            //// return b;
-
-            //;
-            //bool b = UnAllowedWords.Any(s => s.IndexOf(line, StringComparison.CurrentCultureIgnoreCase) >= 0 );
-            //return b;
-
-            return UnAllowedWords.Any(word => line.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0);
+            return TerminationLines.Any(term => term.Equals(line, StringComparison.CurrentCultureIgnoreCase));
         }
 
+        private IEnumerable<string> GetLines(string text)
+        {
+            return text.Split('.').Where(o => o.Length > 1);
+        }
+
+        private string CleanText(string innerText)
+        {
+            innerText = innerText.Replace("\n", ".");
+            innerText = innerText.Replace("..", ".");
+
+            var reg = new Regex(@"[\|!#$%&/()=?»«@£§€{}\-'‘’“”<>_,]");   // . ;
+            innerText = reg.Replace(innerText, string.Empty);
+            return Regex.Replace(innerText, @"\s+", " ");
+        }
+
+        private bool ContainsWrongWords(string line)
+        {
+            return UnAllowedWords.Any(word => line.IndexOf(word, StringComparison.CurrentCultureIgnoreCase) >= 0);
+        }
 
         private void TbWeb_TextChanged(object sender, EventArgs e)
         {
@@ -223,11 +258,12 @@ namespace DocumentHelper
 
         private void BtnAdd_Click(object sender, EventArgs e)
         {
+            if (lstItems.Items.Count < 1) return;
+
             Connection connection = new Connection();
             connection.OpenConnection();
-
             do
-            { 
+            {
                 // Send each line, it will be split there
                 connection.AddAllWordsToDb(lstItems.Items[0].ToString());
                 lstItems.Items.RemoveAt(0);
@@ -237,6 +273,48 @@ namespace DocumentHelper
 
             connection.CloseConnection();
             // lstItems.Items.Clear();
+        }
+
+        private void AddBulkText(string bulkText)
+        {
+            var cleanedText = CleanText(bulkText);
+
+            var result = GetLines(cleanedText);
+
+            //foreach (var item in lines)
+            //{
+            //    var line = item.Trim().Replace("..", string.Empty);
+            //    if (ContainsWrongWords(line)) continue;
+            //    lstItems.Items.Add(line);
+            //}
+            // var result = Regex.Split(cleanedText, "\r\n|\r|\n|.");
+
+            var enumerable = result as string[] ?? result.ToArray();
+
+            if (enumerable.Count() > 10)
+            {
+                lblStatus.Visible = true;
+                tabControl1.Visible = false;
+                this.Refresh();
+            }
+
+            Connection connection = new Connection();
+            connection.OpenConnection();
+            
+            foreach (var line in enumerable)
+            {
+                connection.AddAllWordsToDb(line);
+                lblStatus.Text = "Adding words to db" + Environment.NewLine + Environment.NewLine + line;
+                this.Refresh();
+            }
+
+            connection.CloseConnection();
+
+            if (enumerable.Count() > 10)
+            {
+                lblStatus.Visible = false;
+                tabControl1.Visible = true;
+            }
         }
 
 
@@ -278,6 +356,7 @@ namespace DocumentHelper
 
         private void GetNearWord(string beforeLastItem)
         {
+            return;
             if (string.IsNullOrWhiteSpace(beforeLastItem)) return;
 
             var connection = new Connection();
@@ -324,8 +403,8 @@ namespace DocumentHelper
 
         private void Rt_TextChanged(object sender, EventArgs e)
         {
-            string text = ((RichTextBox)sender).Text;
-            if (string.IsNullOrWhiteSpace(text)) return;
+            var rtText = Rt.Text;
+            if (string.IsNullOrWhiteSpace(rtText)) return;
 
             if (UseListBox)
             {
@@ -336,11 +415,49 @@ namespace DocumentHelper
                 Lvdb.Items.Clear();
             }
 
-            var items = text.Split(' ');
-            var lastItem = items.Last();
-
-            // string[] items = text.Split(new string[] { " ", "\n" }, StringSplitOptions.None);
+            // var items = rtText.Split(' ');
             // var lastItem = items.Last();
+
+            string lastItem;
+            string substring;
+            // =================GET WORD FROM CURRENT POSITION=================
+            var p2 = Rt.SelectionStart;
+            string strTillCursor = rtText.Substring(0, p2);
+            var p1 = strTillCursor.LastIndexOf(' ');
+
+            if (p1 > -1 && p2 > p1)
+            {
+                substring = rtText.Substring(p1, p2-p1);
+                Debug.WriteLine($"P1: {p1}, P2: {p2}, Str: {substring}");
+                lastItem = substring.Trim();
+            }
+            else
+            {
+                Debug.WriteLine($"P1: {p1}, P2: {p2}, Str: unable to find");
+                return;
+            }
+            // =================GET WORD FROM CURRENT POSITION=================
+
+            // Do not Delete
+            // Goog working code to find last typed number
+            /*
+            var num = rtText.Substring(p2 - 1, 1);
+            if (int.TryParse(num, out int iNum))
+            {
+                IsEnterPressedTwice = IsPrevKeyEnter;
+                IsPrevKeyEnter = true;
+                Debug.WriteLine("iNum - 1: " + (iNum - 1));
+            }*/
+
+            var space = rtText.Substring(p2 - 1, 1);
+            if (space == " ")
+            {
+                var items2 = rtText.Substring(0, p1).Trim().Split(' ');
+                var lastWord = (items2.Length > 2)? items2[items2.Length - 2] + " " + items2.Last() : items2.Last();
+                Debug.WriteLine($"--> P1: {p1}, P2: {p2}, lastword: {lastWord}");
+                AddBulkText(lastWord);
+            }
+            
 
             if (hotStrings.ContainsKey(lastItem))
             {
@@ -350,19 +467,28 @@ namespace DocumentHelper
                 Rt.SelectionStart = Rt.Text.Length;
             }
 
-            if (text.Length > 0 && lastItem == "")
+            if (rtText.Length > 0 && lastItem == "")
             {
+                var beforeLastItem = strTillCursor.Substring(0, p1).Split(' ').LastOrDefault();
+
                 //near word mode
-                var beforeLastItem = items.ElementAt(items.Length - 2);
+                // var beforeLastItem = items.ElementAt(items.Length - 2);
                 GetNearWord(beforeLastItem);
             }
             else
             {
                 //auto complete for current word
                 AddNearWords(lastItem);
-                LoadData(lastItem);
+
+                if (lastItem.Length > 2)
+                {
+                    LoadData(lastItem);
+                }
+
+                Lvdb.Visible = Lvdb.Items.Count > 0;
             }
         }
+
 
         private Dictionary<string, string> hotStrings = new Dictionary<string, string>();
 
@@ -385,13 +511,30 @@ namespace DocumentHelper
 
         }
 
+        private bool IsPrevKeyEnter;
+        private bool IsEnterPressedTwice;
+
         private void Rt_KeyDown(object sender, KeyEventArgs e)
         {
+            ShowLvPosition();
+
+            if (e.KeyCode == Keys.F5)
+            {
+                var dialog = MessageBox.Show("Do you want to add these words to db?" +  Environment.NewLine
+                    + "(This will take some time!)", "Sure?", MessageBoxButtons.YesNo);
+                if (dialog == DialogResult.No) return;
+                Rt.Enabled = false;
+                AddBulkText(Rt.Text);
+                Rt.Enabled = true;
+                return;
+            }
+
+
             int row;
 
             if (e.KeyCode == Keys.Escape)
             {
-                if(Lvdb.Items.Count > 0) Lvdb.Items.RemoveAt(0);
+                if (Lvdb.Items.Count > 0) Lvdb.Items.RemoveAt(0);
                 return;
 
                 //if (Lvdb.SelectedItems.Count < 0)
@@ -406,17 +549,39 @@ namespace DocumentHelper
             {
                 if (e.Shift)
                 {
+                    IsPrevKeyEnter = false;
+                    IsEnterPressedTwice = false;
                     return;
-                    Rt.Text = Rt.Text + Environment.NewLine + " ";
-                    Rt.SelectionStart = Rt.Text.Length;
-                    e.SuppressKeyPress = true;
-                    return;
+                    //Rt.Text = Rt.Text + Environment.NewLine + " ";
+                    //Rt.SelectionStart = Rt.Text.Length;
+                    //e.SuppressKeyPress = true;
+                    //return;
                 }
+
+                IsEnterPressedTwice = IsPrevKeyEnter;
+                IsPrevKeyEnter = true;
                 row = 0;
             }
             else
             {
+                //var num = Rt.Text.Substring(Rt.SelectionStart , 1);
+                //if (int.TryParse(num, out int iNum))
+                //{
+                //    IsEnterPressedTwice = IsPrevKeyEnter;
+                //    IsPrevKeyEnter = true;
+                //    row = iNum -1;
+                //}
+                //else
+                //{
+                //    IsEnterPressedTwice = false;
+                //    IsPrevKeyEnter = false;
+                //    return;
+                //}
+
+                IsEnterPressedTwice = false;
+                IsPrevKeyEnter = false;
                 return;
+                // If number
                 //if ((e.KeyValue >= 48 && e.KeyValue <= 57))
                 //{
                 //    row = e.KeyValue - 48;
@@ -428,10 +593,14 @@ namespace DocumentHelper
                 //}
             }
 
+            
+            if (Lvdb.Items.Count == 0)
+            {
+                Lvdb.Visible = false;
+                return;
+            }
+
             e.SuppressKeyPress = true;
-
-            if (Lvdb.Items.Count == 0) return;
-
             if (UseListBox)
             {
 
@@ -449,22 +618,66 @@ namespace DocumentHelper
             }
             else
             {
-                if (Rt.Text.LastIndexOf(' ') > 0)
-                {
-                    Rt.Text = Rt.Text.Substring(0, Rt.Text.LastIndexOf(' ')) + " " +
-                              Lvdb.Items[row].SubItems[1].Text;
-                }
-                else
-                {
-                    Rt.Text = Lvdb.Items[row].SubItems[1].Text;
-                }
-
-                Rt.SelectionStart = Rt.Text.Length;
+                ReplaceCurrentString(Lvdb.Items[row].SubItems[1].Text);
             }
         }
 
+        private void ShowLvPosition()
+        {
+            Lvdb.Visible = true;
+            var pos = Rt.GetPositionFromCharIndex(Rt.SelectionStart);
+            Lvdb.Left = pos.X + 5;
+            Lvdb.Top = pos.Y + 50;
+        }
+
+        private void ReplaceCurrentString(string newString)
+        {
+            newString = newString.Trim();
+            // if (IsEnterPressedTwice) newString += " ";
+
+            Debug.WriteLine("IsEnterPressedTwice: " + IsEnterPressedTwice);
+            var rtText = Rt.Text;
+            var p2 = Rt.SelectionStart;
+            var p1 = rtText.Substring(0, p2).LastIndexOf(' ');
+
+            if (p1 > -1 && p2 > p1)
+            {
+                if (IsEnterPressedTwice)
+                {
+                    Rt.SelectedText = " " + newString;
+                    GetNearWord(newString);
+                    return;
+                }
+
+                var substring = rtText.Substring(p1, p2 - p1);
+                Debug.WriteLine($"P1: {p1}, P2: {p2}, Str: {substring}, New: {newString}");
+                Rt.SelectionStart = p1 + 1;
+                Rt.SelectionLength = p2 - p1 - 1;
+                Rt.SelectedText = newString;
+                Rt.SelectionStart = p1 + newString.Length + 1;
+                Rt.SelectionLength = 0;
+                IsPrevKeyEnter = true; 
+                GetNearWord(newString);
+            }
+            else
+            {
+                Debug.WriteLine($"P1: {p1}, P2: {p2}, Str: Nil, New: Nil");
+            }
+
+            Lvdb.Visible = false;
+        }
+
+        private void BtnAddClipboardToDb_Click(object sender, EventArgs e)
+        {
+            LblStatusDb.Text = "";
+            tabControl1.SelectedIndex = 1;
+            lstItems.Items.Clear();
+            AddTextToListBox(Clipboard.GetText());
+        }
+        
         private void BtnAddTypingToDb_Click(object sender, EventArgs e)
         {
+            LblStatusDb.Text = "";
             tabControl1.SelectedIndex = 1;
             lstItems.Items.Clear();
             AddTextToListBox(Rt.Text);
@@ -479,18 +692,33 @@ namespace DocumentHelper
                 "ا", "ب", "و", "م", "ن", "ل", "س",  "ف", "ق", "ح",
             };
 
-            return;
-            UnAllowedWords = new List<string>
+            TerminationLines = new List<string>
             {
-                "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-                "January", "February", "March", "April", "May", "June", "July", "August" , "September" , "October" , "November" , "December", 
-                "Tamil", "Bayan", "points", "Word", "website", "copy", "in", "the", "one","but", "naveeth", "rahma", "farook", "abdul", "abdur", "pj",
-                "nav", "name", "top","back","next","page", "we", "are","were","was","he","you",
-                "ا", "ب", "و", "م", "ن", "ل", "س",  "ف", "ق", "ح",
-                "india", "usa"
+                "10 நிமிட உரைகள்",
+                "difference between lkdfkjd"
             };
 
+            
+
+            // "1","2","3","4","5","6","7","8","9","0"
+            //return;
+            //UnAllowedWords = new List<string>
+            //{
+            //    "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+            //    "January", "February", "March", "April", "May", "June", "July", "August" , "September" , "October" , "November" , "December", 
+            //    "Tamil", "Bayan", "points", "Word", "website", "copy", "in", "the", "one","but", "naveeth", "rahma", "farook", "abdul", "abdur", "pj",
+            //    "nav", "name", "top","back","next","page", "we", "are","were","was","he","you",
+            //    "ا", "ب", "و", "م", "ن", "ل", "س",  "ف", "ق", "ح",
+            //    "india", "usa"
+            //};
+
         }
+
+        private void Lvdb_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
     }
 
 }

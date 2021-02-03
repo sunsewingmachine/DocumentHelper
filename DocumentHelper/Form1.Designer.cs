@@ -35,6 +35,10 @@ namespace DocumentHelper
             this.lstDBItems = new System.Windows.Forms.ListBox();
             this.Rt = new System.Windows.Forms.RichTextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label6 = new System.Windows.Forms.Label();
+            this.BtnAddClipboardToDb = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.BtnAddTypingToDb = new System.Windows.Forms.Button();
             this.BtnDownload = new System.Windows.Forms.Button();
             this.lstItems = new System.Windows.Forms.ListBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -45,8 +49,8 @@ namespace DocumentHelper
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.TbHs = new System.Windows.Forms.TextBox();
-            this.BtnAddTypingToDb = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.LblStatusDb = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -63,47 +67,52 @@ namespace DocumentHelper
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.Padding = new System.Drawing.Point(0, 0);
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1208, 654);
+            this.tabControl1.Size = new System.Drawing.Size(1114, 654);
             this.tabControl1.TabIndex = 5;
+            this.tabControl1.TabStop = false;
             // 
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.Color.Silver;
             this.tabPage1.Controls.Add(this.Lvdb);
-            this.tabPage1.Controls.Add(this.lstDBItems);
             this.tabPage1.Controls.Add(this.Rt);
+            this.tabPage1.Controls.Add(this.lstDBItems);
             this.tabPage1.Location = new System.Drawing.Point(4, 32);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1200, 618);
+            this.tabPage1.Size = new System.Drawing.Size(1106, 618);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Typing   ";
             // 
             // Lvdb
             // 
+            this.Lvdb.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.Lvdb.HideSelection = false;
-            this.Lvdb.Location = new System.Drawing.Point(808, 11);
+            this.Lvdb.Location = new System.Drawing.Point(528, 37);
             this.Lvdb.Name = "Lvdb";
-            this.Lvdb.Size = new System.Drawing.Size(386, 601);
+            this.Lvdb.Size = new System.Drawing.Size(346, 137);
             this.Lvdb.TabIndex = 10;
             this.Lvdb.UseCompatibleStateImageBehavior = false;
+            this.Lvdb.Visible = false;
+            this.Lvdb.SelectedIndexChanged += new System.EventHandler(this.Lvdb_SelectedIndexChanged);
             // 
             // lstDBItems
             // 
             this.lstDBItems.FormattingEnabled = true;
             this.lstDBItems.ItemHeight = 23;
-            this.lstDBItems.Location = new System.Drawing.Point(808, 11);
+            this.lstDBItems.Location = new System.Drawing.Point(579, 26);
             this.lstDBItems.Name = "lstDBItems";
-            this.lstDBItems.Size = new System.Drawing.Size(386, 602);
+            this.lstDBItems.Size = new System.Drawing.Size(295, 119);
             this.lstDBItems.TabIndex = 9;
+            this.lstDBItems.Visible = false;
             // 
             // Rt
             // 
+            this.Rt.Font = new System.Drawing.Font("Tahoma", 16F);
             this.Rt.Location = new System.Drawing.Point(8, 8);
             this.Rt.Name = "Rt";
-            this.Rt.Size = new System.Drawing.Size(793, 603);
-            this.Rt.TabIndex = 8;
-            this.Rt.TabStop = false;
+            this.Rt.Size = new System.Drawing.Size(894, 603);
+            this.Rt.TabIndex = 0;
             this.Rt.Text = "";
             this.Rt.TextChanged += new System.EventHandler(this.Rt_TextChanged);
             this.Rt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Rt_KeyDown);
@@ -111,6 +120,9 @@ namespace DocumentHelper
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.tabPage2.Controls.Add(this.LblStatusDb);
+            this.tabPage2.Controls.Add(this.label6);
+            this.tabPage2.Controls.Add(this.BtnAddClipboardToDb);
             this.tabPage2.Controls.Add(this.label5);
             this.tabPage2.Controls.Add(this.BtnAddTypingToDb);
             this.tabPage2.Controls.Add(this.BtnDownload);
@@ -122,9 +134,49 @@ namespace DocumentHelper
             this.tabPage2.Location = new System.Drawing.Point(4, 32);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1200, 618);
+            this.tabPage2.Size = new System.Drawing.Size(1106, 618);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Database   ";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(887, 127);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(30, 23);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "Or";
+            // 
+            // BtnAddClipboardToDb
+            // 
+            this.BtnAddClipboardToDb.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.BtnAddClipboardToDb.Location = new System.Drawing.Point(923, 119);
+            this.BtnAddClipboardToDb.Name = "BtnAddClipboardToDb";
+            this.BtnAddClipboardToDb.Size = new System.Drawing.Size(175, 40);
+            this.BtnAddClipboardToDb.TabIndex = 13;
+            this.BtnAddClipboardToDb.Text = "Add Clipboard To Lb";
+            this.BtnAddClipboardToDb.UseVisualStyleBackColor = true;
+            this.BtnAddClipboardToDb.Click += new System.EventHandler(this.BtnAddClipboardToDb_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(680, 127);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(30, 23);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Or";
+            // 
+            // BtnAddTypingToDb
+            // 
+            this.BtnAddTypingToDb.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.BtnAddTypingToDb.Location = new System.Drawing.Point(719, 119);
+            this.BtnAddTypingToDb.Name = "BtnAddTypingToDb";
+            this.BtnAddTypingToDb.Size = new System.Drawing.Size(162, 40);
+            this.BtnAddTypingToDb.TabIndex = 11;
+            this.BtnAddTypingToDb.Text = "Add Typing To Lb";
+            this.BtnAddTypingToDb.UseVisualStyleBackColor = true;
+            this.BtnAddTypingToDb.Click += new System.EventHandler(this.BtnAddTypingToDb_Click);
             // 
             // BtnDownload
             // 
@@ -144,7 +196,7 @@ namespace DocumentHelper
             this.lstItems.ItemHeight = 16;
             this.lstItems.Location = new System.Drawing.Point(30, 193);
             this.lstItems.Name = "lstItems";
-            this.lstItems.Size = new System.Drawing.Size(1164, 340);
+            this.lstItems.Size = new System.Drawing.Size(1069, 340);
             this.lstItems.TabIndex = 9;
             // 
             // label2
@@ -168,7 +220,7 @@ namespace DocumentHelper
             // BtnAdd
             // 
             this.BtnAdd.Font = new System.Drawing.Font("Tahoma", 12F);
-            this.BtnAdd.Location = new System.Drawing.Point(1023, 539);
+            this.BtnAdd.Location = new System.Drawing.Point(928, 539);
             this.BtnAdd.Name = "BtnAdd";
             this.BtnAdd.Size = new System.Drawing.Size(171, 40);
             this.BtnAdd.TabIndex = 5;
@@ -194,7 +246,7 @@ namespace DocumentHelper
             this.tabPage3.Location = new System.Drawing.Point(4, 32);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1200, 618);
+            this.tabPage3.Size = new System.Drawing.Size(1106, 618);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "HotStrings   ";
             // 
@@ -225,35 +277,34 @@ namespace DocumentHelper
             this.TbHs.Location = new System.Drawing.Point(28, 72);
             this.TbHs.Multiline = true;
             this.TbHs.Name = "TbHs";
-            this.TbHs.Size = new System.Drawing.Size(1152, 540);
+            this.TbHs.Size = new System.Drawing.Size(1072, 540);
             this.TbHs.TabIndex = 9;
             // 
-            // BtnAddTypingToDb
+            // lblStatus
             // 
-            this.BtnAddTypingToDb.Font = new System.Drawing.Font("Tahoma", 12F);
-            this.BtnAddTypingToDb.Location = new System.Drawing.Point(719, 119);
-            this.BtnAddTypingToDb.Name = "BtnAddTypingToDb";
-            this.BtnAddTypingToDb.Size = new System.Drawing.Size(200, 40);
-            this.BtnAddTypingToDb.TabIndex = 11;
-            this.BtnAddTypingToDb.Text = "Add Typing To ListBox";
-            this.BtnAddTypingToDb.UseVisualStyleBackColor = true;
-            this.BtnAddTypingToDb.Click += new System.EventHandler(this.BtnAddTypingToDb_Click);
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Font = new System.Drawing.Font("Tahoma", 16F);
+            this.lblStatus.Location = new System.Drawing.Point(50, 100);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(204, 27);
+            this.lblStatus.TabIndex = 8;
+            this.lblStatus.Text = "Adding Words to db";
             // 
-            // label5
+            // LblStatusDb
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(680, 127);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(30, 23);
-            this.label5.TabIndex = 12;
-            this.label5.Text = "Or";
+            this.LblStatusDb.AutoSize = true;
+            this.LblStatusDb.Location = new System.Drawing.Point(445, 167);
+            this.LblStatusDb.Name = "LblStatusDb";
+            this.LblStatusDb.Size = new System.Drawing.Size(0, 23);
+            this.LblStatusDb.TabIndex = 15;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
-            this.ClientSize = new System.Drawing.Size(1211, 660);
+            this.ClientSize = new System.Drawing.Size(1119, 660);
+            this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.tabControl1);
             this.Font = new System.Drawing.Font("Tahoma", 10F);
             this.Name = "Form1";
@@ -266,6 +317,7 @@ namespace DocumentHelper
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -289,6 +341,10 @@ namespace DocumentHelper
         private System.Windows.Forms.Button BtnDownload;
         private System.Windows.Forms.Button BtnAddTypingToDb;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Button BtnAddClipboardToDb;
+        private System.Windows.Forms.Label LblStatusDb;
     }
 }
 
