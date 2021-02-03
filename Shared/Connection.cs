@@ -15,16 +15,19 @@ namespace Shared
         {
             //This part killed me in the beginning.  I was specifying "DataSource"
             //instead of "Data Source"
-            sqlite = new SQLiteConnection(@"Data Source=_sqlite.db");
+            sqlite = new SQLiteConnection(@"Data Source=d:\_sqlite.db");
         }
+
         public void OpenConnection()
         {
             sqlite.Open();
         }
+
         public void CloseConnection()
         {
             sqlite.Close();
         }
+
         public DataTable SelectQuery(string query)
         {
             SQLiteDataAdapter ad;

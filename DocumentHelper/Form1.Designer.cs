@@ -44,7 +44,9 @@ namespace DocumentHelper
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.TbHs = new System.Windows.Forms.TextBox();
+            this.BtnAddTypingToDb = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -109,6 +111,8 @@ namespace DocumentHelper
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.tabPage2.Controls.Add(this.label5);
+            this.tabPage2.Controls.Add(this.BtnAddTypingToDb);
             this.tabPage2.Controls.Add(this.BtnDownload);
             this.tabPage2.Controls.Add(this.lstItems);
             this.tabPage2.Controls.Add(this.label2);
@@ -164,11 +168,11 @@ namespace DocumentHelper
             // BtnAdd
             // 
             this.BtnAdd.Font = new System.Drawing.Font("Tahoma", 12F);
-            this.BtnAdd.Location = new System.Drawing.Point(525, 550);
+            this.BtnAdd.Location = new System.Drawing.Point(1023, 539);
             this.BtnAdd.Name = "BtnAdd";
-            this.BtnAdd.Size = new System.Drawing.Size(149, 40);
+            this.BtnAdd.Size = new System.Drawing.Size(171, 40);
             this.BtnAdd.TabIndex = 5;
-            this.BtnAdd.Text = "Add To Db";
+            this.BtnAdd.Text = "Add List items To Db";
             this.BtnAdd.UseVisualStyleBackColor = true;
             this.BtnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
             // 
@@ -186,7 +190,7 @@ namespace DocumentHelper
             this.tabPage3.BackColor = System.Drawing.Color.Silver;
             this.tabPage3.Controls.Add(this.label4);
             this.tabPage3.Controls.Add(this.label3);
-            this.tabPage3.Controls.Add(this.textBox2);
+            this.tabPage3.Controls.Add(this.TbHs);
             this.tabPage3.Location = new System.Drawing.Point(4, 32);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -196,33 +200,53 @@ namespace DocumentHelper
             // 
             // label4
             // 
-            this.label4.Font = new System.Drawing.Font("Tahoma", 12F);
-            this.label4.Location = new System.Drawing.Point(602, 37);
+            this.label4.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.label4.Location = new System.Drawing.Point(180, 3);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(220, 189);
+            this.label4.Size = new System.Drawing.Size(398, 66);
             this.label4.TabIndex = 11;
-            this.label4.Text = "Examples:\r\n\r\nggc - google cloud\r\nprt   - please read this\r\nhau   - how are you?\r\n" +
-    "\r\n\r\n(put each in a new line, \r\nwith hypen - as delimiter)";
+            this.label4.Text = "Examples:\r\nggc - google cloud\r\nprt   - please read this\r\n(put each in a new line," +
+    " with hypen - as delimiter)\r\n";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(32, 34);
+            this.label3.Location = new System.Drawing.Point(24, 35);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(134, 23);
             this.label3.TabIndex = 10;
             this.label3.Text = "Add hotStrings";
             // 
-            // textBox2
+            // TbHs
             // 
-            this.textBox2.AcceptsReturn = true;
-            this.textBox2.AcceptsTab = true;
-            this.textBox2.Font = new System.Drawing.Font("Tahoma", 18F);
-            this.textBox2.Location = new System.Drawing.Point(205, 34);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(391, 515);
-            this.textBox2.TabIndex = 9;
+            this.TbHs.AcceptsReturn = true;
+            this.TbHs.AcceptsTab = true;
+            this.TbHs.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.TbHs.Location = new System.Drawing.Point(28, 72);
+            this.TbHs.Multiline = true;
+            this.TbHs.Name = "TbHs";
+            this.TbHs.Size = new System.Drawing.Size(1152, 540);
+            this.TbHs.TabIndex = 9;
+            // 
+            // BtnAddTypingToDb
+            // 
+            this.BtnAddTypingToDb.Font = new System.Drawing.Font("Tahoma", 12F);
+            this.BtnAddTypingToDb.Location = new System.Drawing.Point(719, 119);
+            this.BtnAddTypingToDb.Name = "BtnAddTypingToDb";
+            this.BtnAddTypingToDb.Size = new System.Drawing.Size(200, 40);
+            this.BtnAddTypingToDb.TabIndex = 11;
+            this.BtnAddTypingToDb.Text = "Add Typing To ListBox";
+            this.BtnAddTypingToDb.UseVisualStyleBackColor = true;
+            this.BtnAddTypingToDb.Click += new System.EventHandler(this.BtnAddTypingToDb_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(680, 127);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(30, 23);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Or";
             // 
             // Form1
             // 
@@ -258,11 +282,13 @@ namespace DocumentHelper
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox TbHs;
         private System.Windows.Forms.ListBox lstItems;
         private System.Windows.Forms.ListBox lstDBItems;
         private System.Windows.Forms.ListView Lvdb;
         private System.Windows.Forms.Button BtnDownload;
+        private System.Windows.Forms.Button BtnAddTypingToDb;
+        private System.Windows.Forms.Label label5;
     }
 }
 
