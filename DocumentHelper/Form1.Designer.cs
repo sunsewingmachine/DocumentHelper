@@ -32,9 +32,10 @@ namespace DocumentHelper
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.Lvdb = new System.Windows.Forms.ListView();
-            this.lstDBItems = new System.Windows.Forms.ListBox();
             this.Rt = new System.Windows.Forms.RichTextBox();
+            this.lstDBItems = new System.Windows.Forms.ListBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.LblStatusDb = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.BtnAddClipboardToDb = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -50,7 +51,6 @@ namespace DocumentHelper
             this.label3 = new System.Windows.Forms.Label();
             this.TbHs = new System.Windows.Forms.TextBox();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.LblStatusDb = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -88,13 +88,24 @@ namespace DocumentHelper
             // 
             this.Lvdb.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.Lvdb.HideSelection = false;
-            this.Lvdb.Location = new System.Drawing.Point(528, 37);
+            this.Lvdb.Location = new System.Drawing.Point(754, 8);
             this.Lvdb.Name = "Lvdb";
-            this.Lvdb.Size = new System.Drawing.Size(346, 137);
+            this.Lvdb.Size = new System.Drawing.Size(346, 431);
             this.Lvdb.TabIndex = 10;
             this.Lvdb.UseCompatibleStateImageBehavior = false;
             this.Lvdb.Visible = false;
             this.Lvdb.SelectedIndexChanged += new System.EventHandler(this.Lvdb_SelectedIndexChanged);
+            // 
+            // Rt
+            // 
+            this.Rt.Font = new System.Drawing.Font("Tahoma", 16F);
+            this.Rt.Location = new System.Drawing.Point(8, 8);
+            this.Rt.Name = "Rt";
+            this.Rt.Size = new System.Drawing.Size(740, 603);
+            this.Rt.TabIndex = 0;
+            this.Rt.Text = "";
+            this.Rt.TextChanged += new System.EventHandler(this.Rt_TextChanged);
+            this.Rt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Rt_KeyDown);
             // 
             // lstDBItems
             // 
@@ -105,17 +116,6 @@ namespace DocumentHelper
             this.lstDBItems.Size = new System.Drawing.Size(295, 119);
             this.lstDBItems.TabIndex = 9;
             this.lstDBItems.Visible = false;
-            // 
-            // Rt
-            // 
-            this.Rt.Font = new System.Drawing.Font("Tahoma", 16F);
-            this.Rt.Location = new System.Drawing.Point(8, 8);
-            this.Rt.Name = "Rt";
-            this.Rt.Size = new System.Drawing.Size(894, 603);
-            this.Rt.TabIndex = 0;
-            this.Rt.Text = "";
-            this.Rt.TextChanged += new System.EventHandler(this.Rt_TextChanged);
-            this.Rt.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Rt_KeyDown);
             // 
             // tabPage2
             // 
@@ -137,6 +137,14 @@ namespace DocumentHelper
             this.tabPage2.Size = new System.Drawing.Size(1106, 618);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Database   ";
+            // 
+            // LblStatusDb
+            // 
+            this.LblStatusDb.AutoSize = true;
+            this.LblStatusDb.Location = new System.Drawing.Point(445, 167);
+            this.LblStatusDb.Name = "LblStatusDb";
+            this.LblStatusDb.Size = new System.Drawing.Size(0, 23);
+            this.LblStatusDb.TabIndex = 15;
             // 
             // label6
             // 
@@ -289,14 +297,6 @@ namespace DocumentHelper
             this.lblStatus.Size = new System.Drawing.Size(204, 27);
             this.lblStatus.TabIndex = 8;
             this.lblStatus.Text = "Adding Words to db";
-            // 
-            // LblStatusDb
-            // 
-            this.LblStatusDb.AutoSize = true;
-            this.LblStatusDb.Location = new System.Drawing.Point(445, 167);
-            this.LblStatusDb.Name = "LblStatusDb";
-            this.LblStatusDb.Size = new System.Drawing.Size(0, 23);
-            this.LblStatusDb.TabIndex = 15;
             // 
             // Form1
             // 

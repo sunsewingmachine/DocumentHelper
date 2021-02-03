@@ -166,7 +166,7 @@ namespace DocumentHelper
 
                     var item2 = new ListViewItem(new[] {id, b, c, a });
                     Lvdb.Items.Add(item2);
-                    if (Lvdb.Items.Count > 3) break;
+                    // if (Lvdb.Items.Count > 3) break;
                 }
             }
             connection.CloseConnection();
@@ -356,7 +356,7 @@ namespace DocumentHelper
 
         private void GetNearWord(string beforeLastItem)
         {
-            return;
+            // return;
             if (string.IsNullOrWhiteSpace(beforeLastItem)) return;
 
             var connection = new Connection();
@@ -425,6 +425,10 @@ namespace DocumentHelper
             string strTillCursor = rtText.Substring(0, p2);
             var p1 = strTillCursor.LastIndexOf(' ');
 
+            //var p1a = strTillCursor.LastIndexOf(' ');
+            //var p1b = strTillCursor.LastIndexOf('\n');
+            //var p1 = p1a > p1b ? p1a : p1b;
+
             if (p1 > -1 && p2 > p1)
             {
                 substring = rtText.Substring(p1, p2-p1);
@@ -480,7 +484,7 @@ namespace DocumentHelper
                 //auto complete for current word
                 AddNearWords(lastItem);
 
-                if (lastItem.Length > 2)
+                if (lastItem.Length > 1)
                 {
                     LoadData(lastItem);
                 }
@@ -624,6 +628,7 @@ namespace DocumentHelper
 
         private void ShowLvPosition()
         {
+            return;
             Lvdb.Visible = true;
             var pos = Rt.GetPositionFromCharIndex(Rt.SelectionStart);
             Lvdb.Left = pos.X + 5;
