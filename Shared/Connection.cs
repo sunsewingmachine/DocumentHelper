@@ -15,7 +15,7 @@ namespace Shared
         {
             //This part killed me in the beginning.  I was specifying "DataSource"
             //instead of "Data Source"
-            sqlite = new SQLiteConnection(@"Data Source=d:\_sqlite.db");
+            sqlite = new SQLiteConnection(@"Data Source=d:\DocumentTypingHelper_sqlite.db");
         }
 
         public void OpenConnection()
@@ -100,6 +100,33 @@ namespace Shared
             {
                 throw new Exception(ex.Message);
             }
+        }
+
+        public void CreateScannedEntry(string text, int frequency = 1)
+        {
+            //sqlite.Open();
+            SQLiteCommand insertSQL = new SQLiteCommand(
+                string.Format("INSERT INTO ScannedUrl (Text,Frequency) VALUES ('{0}','{1}');", 
+                    text, frequency), sqlite);
+            //insertSQL.Parameters.Add("Text",);
+
+            try
+            {
+                int result = insertSQL.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error in CreateScannedEntry" + ex.Message); 
+            }
+        }
+
+        public bool HasScannedEntry(string text)
+        {
+            var table = SelectQuery(string.Format("select * from ScannedUrl where Text = '{0}';", text));
+
+            var res = table.Rows.Count > 0;
+            Debug.WriteLine("From, HasScannedEntry, Url: " + text + ",    Has: " + res);
+            return res;
         }
 
         public void AddAllWordsToDb(string currentLine)

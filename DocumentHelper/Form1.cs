@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using Microsoft.Win32;
 using Shared.Tools;
+using Microsoft.VisualBasic;
 
 namespace DocumentHelper
 {
@@ -64,8 +65,8 @@ namespace DocumentHelper
 
                 Lvdb.Columns.Add("", 60, HorizontalAlignment.Left);
                 Lvdb.Columns.Add("", 240, HorizontalAlignment.Left);
-                //Lvdb.Columns.Add("", 60, HorizontalAlignment.Left);
-                //Lvdb.Columns.Add("", 60, HorizontalAlignment.Left);
+                Lvdb.Columns.Add("", 60, HorizontalAlignment.Left);
+                Lvdb.Columns.Add("", 60, HorizontalAlignment.Left);
                 Lvdb.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
                 Lvdb.View = View.Details;
             }
@@ -260,6 +261,9 @@ namespace DocumentHelper
         {
             if (lstItems.Items.Count < 1) return;
 
+            var proceed = AddUrlToScannedTable();
+            if (proceed == false) return;
+            
             Connection connection = new Connection();
             connection.OpenConnection();
             do
@@ -272,6 +276,9 @@ namespace DocumentHelper
             while (lstItems.Items.Count > 0);
 
             connection.CloseConnection();
+
+            MessageBox.Show("Data added successfully!");
+
             // lstItems.Items.Clear();
         }
 
@@ -679,7 +686,36 @@ namespace DocumentHelper
             lstItems.Items.Clear();
             AddTextToListBox(Clipboard.GetText());
         }
-        
+
+        public bool AddUrlToScannedTable()
+        {
+            if (string.IsNullOrWhiteSpace(TbWeb.Text))
+            {
+                MessageBox.Show("Empty URL!" + Environment.NewLine + "Where did you take this data from?");
+                return false;
+            }
+
+            bool ret = false;
+            var connection = new Connection();
+            connection.OpenConnection();
+            var has = connection.HasScannedEntry(TbWeb.Text);
+
+            if (has)
+            {
+                MessageBox.Show("You have already added this data, If you want to add it again, please change the url. Add a character or number at the end.");
+                lstItems.Items.Clear();
+            }
+            else
+            {
+                connection.CreateScannedEntry(TbWeb.Text, 1);
+                ret = true;
+            }
+
+            connection.CloseConnection();
+            return ret;
+        }
+
+
         private void BtnAddTypingToDb_Click(object sender, EventArgs e)
         {
             LblStatusDb.Text = "";
