@@ -102,12 +102,13 @@ namespace Shared
             }
         }
 
-        public void CreateScannedEntry(string text, int frequency = 1)
+        public void CreateScannedEntry(string url, string uName, int frequency = 1)
         {
             //sqlite.Open();
             SQLiteCommand insertSQL = new SQLiteCommand(
-                string.Format("INSERT INTO ScannedUrl (Text,Frequency) VALUES ('{0}','{1}');", 
-                    text, frequency), sqlite);
+                string.Format("INSERT INTO ScannedUrl (Url,UName,Frequency) VALUES ('{0}','{1}','{2}');", 
+                    url, uName, frequency), sqlite);
+
             //insertSQL.Parameters.Add("Text",);
 
             try
@@ -120,18 +121,19 @@ namespace Shared
             }
         }
 
-        public bool HasScannedEntry(string text)
+        public bool HasScannedEntry(string url, string uName)
         {
-            var table = SelectQuery(string.Format("select * from ScannedUrl where Text = '{0}';", text));
+            var table = SelectQuery(string.Format("select * from ScannedUrl where Url = '{0}' or UName = '{1}';", url, uName));
 
             var res = table.Rows.Count > 0;
-            Debug.WriteLine("From, HasScannedEntry, Url: " + text + ",    Has: " + res);
+            Debug.WriteLine("From, HasScannedEntry, Url: " + url + ",    Has: " + res);
             return res;
         }
 
-        public void AddAllWordsToDb(string currentLine)
+        public void AddAllWordsToDb(string currentLine, bool enableNearWordsEntry)
         {
             if (string.IsNullOrWhiteSpace(currentLine)) return;
+
 
             var words = currentLine.Split(' ').Reverse(); // Reverse is must
             words = RemoveWordsHavingNumbers(words.ToList());
@@ -139,12 +141,14 @@ namespace Shared
             var enumerable = words as string[] ?? words.ToArray();
             if (enumerable.Length == 0) return;
 
+            Debug.WriteLine("CurrentLine: " + currentLine);
             var total = enumerable.Count();
 
             for (int i = 0; i < total; i++)
             {
                 var currentWord = enumerable[i];
                 var nextWord = (i == 0) ? string.Empty : enumerable[i - 1];
+                if (!enableNearWordsEntry) nextWord = string.Empty;
                 AddWordToDbWithNearWordsIds(currentWord, nextWord);
             }
 
@@ -161,16 +165,19 @@ namespace Shared
 
         private void AddWordToDbWithNearWordsIds(string currentWord, string nextWord)
         {
-            Debug.WriteLine("currentWord: " + currentWord + ",    nextWord:" + nextWord);
+            // Debug.WriteLine("currentWord: " + currentWord + ",    nextWord:" + nextWord);
+
             var table = SelectQuery(string.Format("select * from Document where Text = '{0}';", currentWord));
+            
+            var nextWordId = GetNextWordId(nextWord);
 
             if (table.Rows.Count > 0)
             {
-                UpdateDocumentFrequency(table.Rows[0].ItemArray[0].ToString(), GetNextWordId(nextWord));	
+                UpdateDocumentFrequency(table.Rows[0].ItemArray[0].ToString(), nextWordId);	
             }
             else
             {
-                CreateDocument(currentWord, GetNextWordId(nextWord));
+                CreateDocument(currentWord, nextWordId);
             }
         }
 
@@ -205,6 +212,23 @@ namespace Shared
             {
                 // throw new Exception(ex.Message);
                 Debug.WriteLine("Already contains this link: " + linkText);
+                return false;
+            }
+        }
+
+
+        public bool DeleteAllData(string tableName)
+        {
+            SQLiteCommand insertSQL = new SQLiteCommand("Delete from " + tableName + ";", sqlite);
+
+            try
+            {
+                int result = insertSQL.ExecuteNonQuery();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Error in DeleteAllData: " + ex.Message);
                 return false;
             }
         }

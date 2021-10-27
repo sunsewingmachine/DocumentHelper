@@ -51,6 +51,8 @@ namespace DocumentHelper
             this.label3 = new System.Windows.Forms.Label();
             this.TbHs = new System.Windows.Forms.TextBox();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.TbUrlName = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -120,6 +122,9 @@ namespace DocumentHelper
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.SystemColors.ActiveBorder;
+            this.tabPage2.Controls.Add(this.label7);
+            this.tabPage2.Controls.Add(this.lblStatus);
+            this.tabPage2.Controls.Add(this.TbUrlName);
             this.tabPage2.Controls.Add(this.LblStatusDb);
             this.tabPage2.Controls.Add(this.label6);
             this.tabPage2.Controls.Add(this.BtnAddClipboardToDb);
@@ -292,11 +297,27 @@ namespace DocumentHelper
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Font = new System.Drawing.Font("Tahoma", 16F);
-            this.lblStatus.Location = new System.Drawing.Point(50, 100);
+            this.lblStatus.Location = new System.Drawing.Point(25, 3);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(204, 27);
             this.lblStatus.TabIndex = 8;
             this.lblStatus.Text = "Adding Words to db";
+            // 
+            // TbUrlName
+            // 
+            this.TbUrlName.Location = new System.Drawing.Point(280, 47);
+            this.TbUrlName.Name = "TbUrlName";
+            this.TbUrlName.Size = new System.Drawing.Size(394, 30);
+            this.TbUrlName.TabIndex = 16;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(26, 54);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(168, 23);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "User friendly name";
             // 
             // Form1
             // 
@@ -304,7 +325,6 @@ namespace DocumentHelper
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(1119, 660);
-            this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.tabControl1);
             this.Font = new System.Drawing.Font("Tahoma", 10F);
             this.Name = "Form1";
@@ -317,7 +337,6 @@ namespace DocumentHelper
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -345,6 +364,8 @@ namespace DocumentHelper
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button BtnAddClipboardToDb;
         private System.Windows.Forms.Label LblStatusDb;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox TbUrlName;
     }
 }
 

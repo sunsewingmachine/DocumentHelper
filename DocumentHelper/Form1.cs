@@ -28,6 +28,8 @@ namespace DocumentHelper
         private string RegValue_Left = @"Left";
         private string RegValue_Top = @"Top";
         private string RegValue_TbWebText = @"TbWebText";
+        private string RegValue_TbUrlNameText = @"TbUrlNameText";
+
         private List<string> UnAllowedWords = new List<string>();
         private List<string> TerminationLines = new List<string>();
 
@@ -42,9 +44,41 @@ namespace DocumentHelper
             SaveSettings();
         }
 
+        public void DeleteAllDataFromAllTables()
+        {
+            var message = "Deleting all data if pressed Yes";
+
+            DialogResult dialogResult = MessageBox.Show(message, "Warning", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning, 
+                MessageBoxDefaultButton.Button3);
+
+            if (dialogResult == DialogResult.Yes)
+            {
+                //do something
+            }
+            else
+            {
+                return;
+            }
+
+
+            var connection = new Connection();
+            connection.OpenConnection();
+            connection.DeleteAllData("Document");
+            connection.DeleteAllData("ScannedUrl");
+            // connection.DeleteAllData("Links");
+            connection.CloseConnection();
+            Application.Exit();
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            // DeleteAllDataFromAllTables();
+            // return;
+
+            Glob.EnableNearWordsEntry = false;
+
             lblStatus.Visible = false;
+            GetSettings();
             GetSettings();
             PopulateUnAllowedWords();
 
@@ -80,12 +114,28 @@ namespace DocumentHelper
             // LoadData(string.Empty);
         }
 
+        private void Onload()
+        {
+            this.Left = Reg.GetSetting(Keys.ThisLeft, 300);
+            this.Top = Reg.GetSetting(Keys.ThisTop, 300);
+            this.Width = Reg.GetSetting(Keys.ThisWidth, this.Width);
+            this.Height = Reg.GetSetting(Keys.ThisHeight, this.Height);
+        }
+
         private void SaveSettings()
         {
+            Reg.SaveSetting(Keys.TbUrlNameText, TbUrlName.Text);
+
+            Reg.SaveSetting(Keys.ThisLeft, this.Left);
+            Reg.SaveSetting(Keys.ThisTop, this.Top);
+            Reg.SaveSetting(Keys.ThisHeight, this.Height);
+            Reg.SaveSetting(Keys.ThisWidth, this.Width);
+
             RegistryKey key2 = Registry.CurrentUser.CreateSubKey(RegSubKey);
             key2.SetValue(RegValue_RtContent, Rt.Text);
             key2.SetValue(RegValue_HotStringContent, TbHs.Text);
             key2.SetValue(RegValue_TbWebText, TbWeb.Text);
+            // key2.SetValue(RegValue_TbUrlNameText, TbUrlName.Text);
 
             if (this.WindowState == FormWindowState.Minimized) return;
             if (this.WindowState == FormWindowState.Maximized) return;
@@ -99,6 +149,8 @@ namespace DocumentHelper
 
         private void GetSettings()
         {
+            Onload();
+
             RegistryKey key2 = Registry.CurrentUser.OpenSubKey(RegSubKey);
             if (key2 == null)
             {
@@ -106,12 +158,17 @@ namespace DocumentHelper
                 key2.SetValue(RegValue_RtContent, "");
                 key2.SetValue(RegValue_HotStringContent, "");
                 key2.SetValue(RegValue_TbWebText, TbWeb.Text);
+                key2.SetValue(RegValue_TbUrlNameText, TbUrlName.Text);
                 key2.SetValue(RegValue_Left, 500);
                 key2.SetValue(RegValue_Top, 500);
             }
 
             var TbWebText = key2.GetValue(RegValue_TbWebText, "").ToString();
             TbWeb.Text = TbWebText;
+
+            // TbUrlName.Text = Reg.GetSetting(Keys.TbUrlNameText, "Book");
+            TbUrlName.Text = string.Empty;
+
             // TbWeb.Text = string.IsNullOrWhiteSpace(TbWebText) ? " " : @"https://indiabeeps.com/allprojects/del/addtexttodb/test5.html";
 
             var RtText = key2.GetValue(RegValue_RtContent, "").ToString();
@@ -185,7 +242,16 @@ namespace DocumentHelper
 
         private void BtnDownload_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("Please correct this function first!");
+            return;
+
             if (string.IsNullOrWhiteSpace(TbWeb.Text)) return;
+            if (string.IsNullOrWhiteSpace(TbUrlName.Text))
+            {
+                MessageBox.Show("Please enter book name/data name for this data!");
+                return;
+            }
+
             Connection con = new Connection();
             con.OpenConnection();
             var success = con.CreateAlreadyAddedLink(TbWeb.Text);
@@ -263,13 +329,15 @@ namespace DocumentHelper
 
             var proceed = AddUrlToScannedTable();
             if (proceed == false) return;
-            
+
+            int lineNo = 0;
             Connection connection = new Connection();
             connection.OpenConnection();
             do
             {
+                Debug.WriteLine("LineNo: " + ++lineNo);
                 // Send each line, it will be split there
-                connection.AddAllWordsToDb(lstItems.Items[0].ToString());
+                connection.AddAllWordsToDb(lstItems.Items[0].ToString(), Glob.EnableNearWordsEntry);
                 lstItems.Items.RemoveAt(0);
                 lstItems.Refresh();
             }
@@ -310,7 +378,7 @@ namespace DocumentHelper
             
             foreach (var line in enumerable)
             {
-                connection.AddAllWordsToDb(line);
+                connection.AddAllWordsToDb(line, Glob.EnableNearWordsEntry);
                 lblStatus.Text = "Adding words to db" + Environment.NewLine + Environment.NewLine + line;
                 this.Refresh();
             }
@@ -529,7 +597,7 @@ namespace DocumentHelper
         {
             ShowLvPosition();
 
-            if (e.KeyCode == Keys.F5)
+            if (e.KeyCode == System.Windows.Forms.Keys.F5)
             {
                 var dialog = MessageBox.Show("Do you want to add these words to db?" +  Environment.NewLine
                     + "(This will take some time!)", "Sure?", MessageBoxButtons.YesNo);
@@ -543,7 +611,7 @@ namespace DocumentHelper
 
             int row;
 
-            if (e.KeyCode == Keys.Escape)
+            if (e.KeyCode == System.Windows.Forms.Keys.Escape)
             {
                 if (Lvdb.Items.Count > 0) Lvdb.Items.RemoveAt(0);
                 return;
@@ -556,7 +624,7 @@ namespace DocumentHelper
                 //int index = (Lvdb.SelectedItems == null) ? 0 : 2;
             }
 
-            if (e.KeyCode.Equals(Keys.Enter))
+            if (e.KeyCode.Equals(System.Windows.Forms.Keys.Enter))
             {
                 if (e.Shift)
                 {
@@ -694,20 +762,28 @@ namespace DocumentHelper
                 MessageBox.Show("Empty URL!" + Environment.NewLine + "Where did you take this data from?");
                 return false;
             }
+            
+            if (string.IsNullOrWhiteSpace(TbUrlName.Text))
+            {
+                MessageBox.Show("Empty Data Name!" + Environment.NewLine + "Please enter book name/data name for this data!");
+                return false;
+            }
+
 
             bool ret = false;
             var connection = new Connection();
             connection.OpenConnection();
-            var has = connection.HasScannedEntry(TbWeb.Text);
+            var has = connection.HasScannedEntry(TbWeb.Text, TbUrlName.Text);
 
             if (has)
             {
-                MessageBox.Show("You have already added this data, If you want to add it again, please change the url. Add a character or number at the end.");
+                MessageBox.Show("You have already added this data, If you want to add it again, please change the url and Data name.");
+
                 lstItems.Items.Clear();
             }
             else
             {
-                connection.CreateScannedEntry(TbWeb.Text, 1);
+                connection.CreateScannedEntry(TbWeb.Text, TbUrlName.Text, 1);
                 ret = true;
             }
 
